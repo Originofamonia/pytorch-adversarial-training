@@ -1,4 +1,3 @@
-
 import os
 import torch
 import torchvision as tv
@@ -11,32 +10,27 @@ from argument import parser
 from src.visualization import VanillaBackprop
 from src.model.madry_model import WideResNet
 
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 
 img_folder = 'img'
 makedirs(img_folder)
 out_num = 5
 
-
 args = parser()
 
 label_dict = LabelDict(args.dataset)
 
-te_dataset = tv.datasets.CIFAR10(args.data_root, 
-                               train=False, 
-                               transform=tv.transforms.ToTensor(), 
-                               download=True)
+te_dataset = tv.datasets.CIFAR10(args.data_root,
+                                 train=False,
+                                 transform=tv.transforms.ToTensor(),
+                                 download=True)
 
 te_loader = DataLoader(te_dataset, batch_size=args.batch_size, shuffle=False, num_workers=4)
 
-
 for data, label in te_loader:
-
     data, label = tensor2cuda(data), tensor2cuda(label)
 
-
     break
-
 
 model = WideResNet(depth=34, num_classes=10, widen_factor=10, dropRate=0.0)
 
@@ -56,7 +50,7 @@ std = grad_flat.std(1, keepdim=True).unsqueeze(2).unsqueeze(3)
 mean = mean.repeat(1, 1, data.shape[2], data.shape[3])
 std = std.repeat(1, 1, data.shape[2], data.shape[3])
 
-grad = torch.max(torch.min(grad, mean+3*std), mean-3*std)
+grad = torch.max(torch.min(grad, mean + 3 * std), mean - 3 * std)
 
 print(grad.min(), grad.max())
 
@@ -181,7 +175,7 @@ plt.savefig(os.path.join(img_folder, 'cifar_grad_%s.jpg' % args.affix))
 #         data_id = i + 0
 
 #         axs[j, i].set_xlabel('%s' % label_dict.label2class(label[data_id]))
-        
+
 #         img = out_list[j][data_id]
 #         # print(img)
 #         img = np.transpose(img, (1, 2, 0))

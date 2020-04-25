@@ -1,4 +1,3 @@
-
 import os
 import torch
 import torchvision as tv
@@ -12,7 +11,7 @@ from src.visualization import VanillaBackprop
 from src.attack import FastGradientSignUntargeted
 from src.model.madry_model import WideResNet
 
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 
 max_epsilon = 4.7
 
@@ -27,27 +26,22 @@ args = parser()
 
 label_dict = LabelDict(args.dataset)
 
-te_dataset = tv.datasets.CIFAR10(args.data_root, 
-                               train=False, 
-                               transform=tv.transforms.ToTensor(), 
-                               download=True)
+te_dataset = tv.datasets.CIFAR10(args.data_root,
+                                 train=False,
+                                 transform=tv.transforms.ToTensor(),
+                                 download=True)
 
 te_loader = DataLoader(te_dataset, batch_size=args.batch_size, shuffle=False, num_workers=4)
 
-
 for data, label in te_loader:
-
     data, label = tensor2cuda(data), tensor2cuda(label)
 
-
     break
-
 
 adv_list = []
 pred_list = []
 
 with torch.no_grad():
-
     model = WideResNet(depth=34, num_classes=10, widen_factor=10, dropRate=0.0)
 
     load_model(model, args.load_checkpoint)
@@ -55,15 +49,14 @@ with torch.no_grad():
     if torch.cuda.is_available():
         model.cuda()
 
-    attack = FastGradientSignUntargeted(model, 
-                                        max_epsilon, 
-                                        args.alpha, 
-                                        min_val=0, 
-                                        max_val=1, 
-                                        max_iters=args.k, 
+    attack = FastGradientSignUntargeted(model,
+                                        max_epsilon,
+                                        args.alpha,
+                                        min_val=0,
+                                        max_val=1,
+                                        max_iters=args.k,
                                         _type=perturbation_type)
 
-   
     adv_data = attack.perturb(data, label, 'mean', False)
 
     output = model(adv_data, _eval=True)
@@ -78,7 +71,6 @@ label = label.cpu().numpy()
 adv_list.insert(0, data)
 
 pred_list.insert(0, label)
-
 
 types = ['Original', 'Your Model']
 
@@ -138,7 +130,7 @@ plt.savefig(os.path.join(img_folder, 'cifar_large_%s_%s.jpg' % (perturbation_typ
 #                                             max_iters=args.k, 
 #                                             _type=perturbation_type)
 
-       
+
 #         adv_data = attack.perturb(data, label, 'mean', False)
 
 #         output = model(adv_data, _eval=True)

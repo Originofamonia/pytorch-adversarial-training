@@ -4,8 +4,6 @@ this code is modified from https://github.com/utkuozbulak/pytorch-cnn-adversaria
 original author: Utku Ozbulak - github.com/utkuozbulak
 """
 import sys
-sys.path.append("..")
-
 import os
 import numpy as np
 
@@ -13,10 +11,11 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
-from src.utils import tensor2cuda
+from cifar10.src.utils import tensor2cuda
+sys.path.append("..")
+
 
 def project(x, original_x, epsilon, _type='linf'):
-
     if _type == 'linf':
         max_x = original_x + epsilon
         min_x = original_x - epsilon
@@ -47,11 +46,13 @@ def project(x, original_x, epsilon, _type='linf'):
 
     return x
 
+
 class FastGradientSignUntargeted():
     b"""
         Fast gradient sign untargeted adversarial attack, minimizes the initial class activation
         with iterative grad sign updates
     """
+
     def __init__(self, model, epsilon, alpha, min_val, max_val, max_iters, _type='linf'):
         self.model = model
         # self.model.eval()
@@ -68,7 +69,7 @@ class FastGradientSignUntargeted():
         self.max_iters = max_iters
         # The perturbation of epsilon
         self._type = _type
-        
+
     def perturb(self, original_images, labels, reduction4loss='mean', random_start=False):
         # original_images: values are within self.min_val and self.max_val
 
@@ -82,7 +83,7 @@ class FastGradientSignUntargeted():
         else:
             x = original_images.clone()
 
-        x.requires_grad = True 
+        x.requires_grad = True
 
         # max_x = original_images + self.epsilon
         # min_x = original_images - self.epsilon
@@ -97,14 +98,14 @@ class FastGradientSignUntargeted():
 
                 if reduction4loss == 'none':
                     grad_outputs = tensor2cuda(torch.ones(loss.shape))
-                    
+
                 else:
                     grad_outputs = None
 
-                grads = torch.autograd.grad(loss, x, grad_outputs=grad_outputs, 
-                        only_inputs=True)[0]
+                grads = torch.autograd.grad(loss, x, grad_outputs=grad_outputs,
+                                            only_inputs=True)[0]
 
-                x.data += self.alpha * torch.sign(grads.data) 
+                x.data += self.alpha * torch.sign(grads.data)
 
                 # the adversaries' pixel value should within max_x and min_x due 
                 # to the l_infinity / l2 restriction

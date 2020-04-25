@@ -5,16 +5,17 @@ original author: Utku Ozbulak - github.com/utkuozbulak
 """
 
 import sys
-sys.path.append("..")
-
 import torch
 
-from src.utils import tensor2cuda, one_hot
+from cifar10.src.utils import tensor2cuda, one_hot
+sys.path.append("..")
 
-class VanillaBackprop():
+
+class VanillaBackprop:
     """
         Produces gradients generated with vanilla back propagation from the image
     """
+
     def __init__(self, model):
         self.model = model
 
@@ -31,12 +32,12 @@ class VanillaBackprop():
             model_output = self.model(x)
             # Zero grads
             self.model.zero_grad()
-            
+
             grad_outputs = one_hot(target_class, model_output.shape[1])
             grad_outputs = tensor2cuda(grad_outputs)
 
-            grad = torch.autograd.grad(model_output, x, grad_outputs=grad_outputs, 
-                        only_inputs=True)[0]
+            grad = torch.autograd.grad(model_output, x, grad_outputs=grad_outputs,
+                                       only_inputs=True)[0]
 
             self.model.train()
 

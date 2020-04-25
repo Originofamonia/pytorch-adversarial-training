@@ -6,15 +6,17 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from src.utils import count_parameters
+from cifar10.src.utils import count_parameters
+
 
 class Expression(nn.Module):
     def __init__(self, func):
         super(Expression, self).__init__()
         self.func = func
-    
+
     def forward(self, input):
         return self.func(input)
+
 
 class Model(nn.Module):
     def __init__(self, i_c=1, n_c=10):
@@ -26,11 +28,9 @@ class Model(nn.Module):
         self.conv2 = nn.Conv2d(32, 64, 5, stride=1, padding=2, bias=True)
         self.pool2 = nn.MaxPool2d((2, 2), stride=(2, 2), padding=0)
 
-
         self.flatten = Expression(lambda tensor: tensor.view(tensor.shape[0], -1))
         self.fc1 = nn.Linear(7 * 7 * 64, 1024, bias=True)
         self.fc2 = nn.Linear(1024, n_c)
-
 
     def forward(self, x_i, _eval=False):
 
@@ -39,7 +39,7 @@ class Model(nn.Module):
             self.eval()
         else:
             self.train()
-            
+
         x_o = self.conv1(x_i)
         x_o = torch.relu(x_o)
         x_o = self.pool1(x_o)
@@ -57,9 +57,6 @@ class Model(nn.Module):
         return self.fc2(x_o)
 
 
-
-
-
 class BasicBlock(nn.Module):
     def __init__(self, in_planes, out_planes, stride, dropRate=0.0):
         super(BasicBlock, self).__init__()
@@ -74,7 +71,8 @@ class BasicBlock(nn.Module):
         self.droprate = dropRate
         self.equalInOut = (in_planes == out_planes)
         self.convShortcut = (not self.equalInOut) and nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride,
-                               padding=0, bias=False) or None
+                                                                padding=0, bias=False) or None
+
     def forward(self, x):
         if not self.equalInOut:
             x = self.relu1(self.bn1(x))
@@ -86,23 +84,27 @@ class BasicBlock(nn.Module):
         out = self.conv2(out)
         return torch.add(x if self.equalInOut else self.convShortcut(x), out)
 
+
 class NetworkBlock(nn.Module):
     def __init__(self, nb_layers, in_planes, out_planes, block, stride, dropRate=0.0):
         super(NetworkBlock, self).__init__()
         self.layer = self._make_layer(block, in_planes, out_planes, nb_layers, stride, dropRate)
+
     def _make_layer(self, block, in_planes, out_planes, nb_layers, stride, dropRate):
         layers = []
         for i in range(int(nb_layers)):
             layers.append(block(i == 0 and in_planes or out_planes, out_planes, i == 0 and stride or 1, dropRate))
         return nn.Sequential(*layers)
+
     def forward(self, x):
         return self.layer(x)
+
 
 class WideResNet(nn.Module):
     def __init__(self, depth, num_classes, widen_factor=1, dropRate=0.0):
         super(WideResNet, self).__init__()
-        nChannels = [16, 16*widen_factor, 32*widen_factor, 64*widen_factor]
-        assert((depth - 4) % 6 == 0)
+        nChannels = [16, 16 * widen_factor, 32 * widen_factor, 64 * widen_factor]
+        assert ((depth - 4) % 6 == 0)
         n = (depth - 4) / 6
         block = BasicBlock
         # 1st conv before any network block
@@ -158,4 +160,3 @@ if __name__ == '__main__':
     # print(n(i).size())
 
     print(count_parameters(n))
-
