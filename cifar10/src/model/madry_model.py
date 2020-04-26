@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from cifar10.src.utils import count_parameters
+from cifar10.src.utils.utils import count_parameters
 
 
 class Expression(nn.Module):

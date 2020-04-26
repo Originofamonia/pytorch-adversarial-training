@@ -8,8 +8,8 @@ import torchvision as tv
 
 from time import time
 from cifar10.src.model.madry_model import WideResNet
-from cifar10.src.attack import FastGradientSignUntargeted
-from cifar10.src.utils import makedirs, create_logger, tensor2cuda, numpy2cuda, evaluate, save_model
+from cifar10.src.attack.fast_gradient_sign_untargeted import FastGradientSignUntargeted
+from cifar10.src.utils.utils import makedirs, create_logger, tensor2cuda, numpy2cuda, evaluate, save_model
 from cifar10.src.argument import parser, print_args
 
 

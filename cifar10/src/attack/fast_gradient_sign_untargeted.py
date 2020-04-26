@@ -11,7 +11,7 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
-from cifar10.src.utils import tensor2cuda
+from cifar10.src.utils.utils import tensor2cuda
 sys.path.append("..")
 
 
