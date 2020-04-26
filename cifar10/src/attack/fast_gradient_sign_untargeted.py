@@ -47,8 +47,8 @@ def project(x, original_x, epsilon, _type='linf'):
     return x
 
 
-class FastGradientSignUntargeted():
-    b"""
+class FastGradientSignUntargeted:
+    """
         Fast gradient sign untargeted adversarial attack, minimizes the initial class activation
         with iterative grad sign updates
     """

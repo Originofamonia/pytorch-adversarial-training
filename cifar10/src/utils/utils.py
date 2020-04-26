@@ -66,11 +66,16 @@ def one_hot(ids, n_class):
 
 
 def evaluate(_input, _target, method='mean'):
-    correct = (_input == _target).astype(np.float32)
+    # correct = (_input == _target).astype(np.float32)
+    # if method == 'mean':
+    #     return correct.mean()
+    # else:
+    #     return correct.sum()
+    correct = (_input == _target).sum().item()
     if method == 'mean':
-        return correct.mean()
+        return correct / _target.shape[0]
     else:
-        return correct.sum()
+        return correct
 
 
 def create_logger(save_path='', file_type='', level='debug'):

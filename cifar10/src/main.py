@@ -34,7 +34,6 @@ class Trainer:
                                                          milestones=[100, 150],
                                                          gamma=0.1)
         _iter = 0
-
         begin_time = time()
 
         for epoch in range(1, args.max_epoch + 1):
@@ -65,11 +64,11 @@ class Trainer:
                         pred = torch.max(stand_output, dim=1)[1]
 
                         # print(pred)
-                        std_acc = evaluate(pred.cpu().numpy(), label.cpu().numpy()) * 100
+                        std_acc = evaluate(pred, label) * 100
 
                         pred = torch.max(output, dim=1)[1]
                         # print(pred)
-                        adv_acc = evaluate(pred.cpu().numpy(), label.cpu().numpy()) * 100
+                        adv_acc = evaluate(pred, label) * 100
 
                     else:
                         adv_data = self.attack.perturb(data, label, 'mean', False)
@@ -79,11 +78,11 @@ class Trainer:
                         pred = torch.max(adv_output, dim=1)[1]
                         # print(label)
                         # print(pred)
-                        adv_acc = evaluate(pred.cpu().numpy(), label.cpu().numpy()) * 100
+                        adv_acc = evaluate(pred, label) * 100
 
                         pred = torch.max(output, dim=1)[1]
                         # print(pred)
-                        std_acc = evaluate(pred.cpu().numpy(), label.cpu().numpy()) * 100
+                        std_acc = evaluate(pred, label) * 100
 
                     t2 = time()
 
@@ -147,7 +146,7 @@ class Trainer:
                 output = model(data, _eval=True)
 
                 pred = torch.max(output, dim=1)[1]
-                te_acc = evaluate(pred.cpu().numpy(), label.cpu().numpy(), 'sum')
+                te_acc = evaluate(pred, label, 'sum')
 
                 total_acc += te_acc
                 num += output.shape[0]
@@ -163,7 +162,7 @@ class Trainer:
                     adv_output = model(adv_data, _eval=True)
 
                     adv_pred = torch.max(adv_output, dim=1)[1]
-                    adv_acc = evaluate(adv_pred.cpu().numpy(), label.cpu().numpy(), 'sum')
+                    adv_acc = evaluate(adv_pred, label, 'sum')
                     total_adv_acc += adv_acc
                 else:
                     total_adv_acc = -num
@@ -249,7 +248,5 @@ def main(args):
 
 if __name__ == '__main__':
     args = parser()
-
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
-
     main(args)

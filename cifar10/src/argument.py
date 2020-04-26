@@ -23,7 +23,7 @@ def parser():
                         help='maximum iteration when generating adversarial examples')
 
     parser.add_argument('--batch_size', '-b', type=int, default=20, help='batch size')
-    parser.add_argument('--max_epoch', '-m_e', type=int, default=50,
+    parser.add_argument('--max_epoch', '-m_e', type=int, default=200,
                         help='the maximum numbers of the model see a sample')
     parser.add_argument('--learning_rate', '-lr', type=float, default=1e-2, help='learning rate')
     parser.add_argument('--weight_decay', '-w', type=float, default=2e-4,
@@ -39,7 +39,7 @@ def parser():
     parser.add_argument('--perturbation_type', '-p', choices=['linf', 'l2'], default='linf',
                         help='the type of the perturbation (linf or l2)')
 
-    parser.add_argument('--adv_train', action='store_true')
+    parser.add_argument('--adv_train', default=True, action='store_true')
 
     return parser.parse_args()
 
