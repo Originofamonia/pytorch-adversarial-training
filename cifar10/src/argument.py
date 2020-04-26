@@ -22,8 +22,8 @@ def parser():
     parser.add_argument('--k', '-k', type=int, default=10,
                         help='maximum iteration when generating adversarial examples')
 
-    parser.add_argument('--batch_size', '-b', type=int, default=20, help='batch size')
-    parser.add_argument('--max_epoch', '-m_e', type=int, default=200,
+    parser.add_argument('--batch_size', '-b', type=int, default=100, help='batch size')
+    parser.add_argument('--max_epoch', '-m_e', type=int, default=90,
                         help='the maximum numbers of the model see a sample')
     parser.add_argument('--learning_rate', '-lr', type=float, default=1e-2, help='learning rate')
     parser.add_argument('--weight_decay', '-w', type=float, default=2e-4,
